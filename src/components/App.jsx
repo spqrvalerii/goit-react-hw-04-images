@@ -21,10 +21,10 @@ const App = () => {
   const [currentImageDescription, setCurrentImageDescription] = useState(null)
   
   useEffect(() => {
-    if ({query, page, error}) {
+    if (!query)
+      return;    
       setIsLoading(true)
       setError(null)
-      // this.setState({ isLoading: true, error: null });
       fetchImages(query, page)
         .then(({ hits, totalHits }) => {
           if (!hits.length) {
@@ -39,53 +39,36 @@ const App = () => {
               largeImage: largeImageURL,
             })
           );
-          return (prevImages) => {
-            return (setImages({...prevImages, ...imagesArray}),
-              setTotalImages({totalImages: totalHits}))            
-          };
+          setImages(prevImages => [...prevImages, ...imagesArray]);
+          setTotalImages(totalHits)
         })
         .catch(error =>
           setError({error: error.message}))
-        // this.setState({ error: error.message }))
         .finally(() =>
           setIsLoading(false)
-          // this.setState({ isLoading: false })
-        );
-    }
+        );    
 }, [query, page, error])  
   
   const getSearchRequest = (query) => {
-    setQuery('')
+    setQuery(query)
     setImages([])
     setPage(1)  
-    // this.setState({ query, images: [], page: 1 });
   };
 
   const onNextFetch = () => {
-    setPage(page + 1)
-    // this.setState(({ page }) => ({ page: page + 1 }));
+    setPage(prevPage => prevPage + 1)
   };
 
   const openModal = ({ description, largeImage }) => {
     setShowModal(true)
     setCurrentImageUrl(largeImage)
     setCurrentImageDescription(description)
-    // this.setState({
-    //   showModal: true,
-    //   currentImageUrl: largeImage,
-    //   currentImageDescription: description,
-    // });
   };
   
   const closeModal = () => {
     setShowModal(false)
     setCurrentImageUrl(null)
     setCurrentImageDescription(null)
-    // this.setState({
-    //   showModal: false,
-    //   currentImageUrl: null,
-    //   currentImageDescription: null,
-    // });
   };
   
   return (
@@ -127,128 +110,3 @@ const App = () => {
 }
 
 export { App };
-
-// class OldApp extends Component {
-//   state = {
-//     query: '',
-//     page: 1,
-//     totalImages: 0,
-//     isLoading: false,
-//     showModal: false,
-//     images: [],
-//     error: null,
-//     currentImageUrl: null,
-//     currentImageDescription: null,
-//   };
-
-//   componentDidUpdate(prevProps, prevState) {
-//     const { query, page, error } = this.state;
-
-//     if (prevState.query !== query || prevState.page !== page) {
-//     this.setState({ isLoading: true, error: null });
-//     fetchImages(query, page)
-//       .then(({ hits, totalHits }) => {
-//         if (!hits.length) {
-//           toast('Images not found');
-//           return;
-//         }
-//         const imagesArray = hits.map(
-//           ({ id, tags, webformatURL, largeImageURL }) => ({
-//             id: id,
-//             description: tags,
-//             smallImage: webformatURL,
-//             largeImage: largeImageURL,
-//           })
-//         );
-//         return this.setState((prevState) => {
-//           return {
-//           images: [...prevState.images, ...imagesArray],
-//           totalImages: totalHits,
-//           }
-//         });
-//       })
-//       .catch((error) => this.setState({ error: error.message }))
-//       .finally(() => this.setState({ isLoading: false })
-//       );
-//     }
-//     if (prevState.error !== error && error) {
-//       toast.error(error)
-//     }
-//   }
-
-//   getSearchRequest = (query) => {
-//     this.setState({ query, images: [], page: 1 });
-//   };
-
-//   onNextFetch = () => {
-//     this.setState(({ page }) => ({ page: page + 1 }));
-//   };
-
-//   openModal = ({ description, largeImage }) => {
-//     this.setState({
-//       showModal: true,
-//       currentImageUrl: largeImage,
-//       currentImageDescription: description,
-//     });
-//   };
-  
-//   closeModal = () => {
-//     this.setState({
-//       showModal: false,
-//       currentImageUrl: null,
-//       currentImageDescription: null,
-//     });
-//   };
-
-//   render() {
-//     const {
-//       images,
-//       totalImages,
-//       isLoading,
-//       showModal,
-//       currentImageUrl,
-//       currentImageDescription,
-//     } = this.state;
-
-//     const { getSearchRequest, onNextFetch, openModal, closeModal } = this;
-
-//     return (
-//       <>
-//         <Searchbar onSubmit={getSearchRequest} />
-
-//         {images.length > 0 && (
-//           <ImageGallery images={images} openModal={openModal} />
-//         )}
-
-//         {isLoading && <Loader />}
-
-//         {!isLoading && totalImages !== images.length && (
-//           <Button onNextFetch={onNextFetch} />
-//         )}
-
-//         {showModal && (
-//           <Modal
-//             onClose={closeModal}
-//             currentImageUrl={currentImageUrl}
-//             currentImageDescription={currentImageDescription}
-//           />
-//         )}
-
-//         <ToastContainer
-//           position="top-right"
-//           autoClose={3000}
-//           hideProgressBar={false}
-//           newestOnTop={false}
-//           closeOnClick
-//           rtl={false}
-//           pauseOnFocusLoss
-//           draggable
-//           pauseOnHover
-//           theme="light"        
-//         />
-//       </>
-//     )
-//   }
-// };
-
-// export { App };
